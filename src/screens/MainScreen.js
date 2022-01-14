@@ -4,8 +4,8 @@ import SwapForm from "../components/SwapForm";
 import ProvideForm from "../components/ProvideForm";
 import WithdrawForm from "../components/WithdrawForm";
 
-const MainScreen = () => {
-  const [form, setForm] = useState("swap");
+const MainScreen = (address) => {
+  const [form, setForm] = useState("provide");
 
   const renderContent = () => {
     if (form === "swap") {

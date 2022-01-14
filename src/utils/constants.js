@@ -1,0 +1,6 @@
+import abi from "../utils/TestingToken.json";
+const tokenabi = abi.abi;
+const OHM_CONTRACT = "0x23522e6421c3E03fb535916E6c57bc0d9c59f4fD";
+const TIME_CONTRACT = "0xAb8e4b653D3016C89cAc1CF208B55CdFcFB4A370";
+const PAIR_CONTRACT = "0x88456C26385f8104246ec183BAF3dF2593d50445";
+export { OHM_CONTRACT, TIME_CONTRACT, PAIR_CONTRACT, tokenabi };
