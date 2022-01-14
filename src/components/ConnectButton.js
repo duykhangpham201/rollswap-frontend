@@ -19,10 +19,8 @@ const ConnectButton = () => {
     
                 if(accounts.length!==0) {
                     const account = accounts[0]
-                    console.log("Found an authorized account:", account)
                     setCurrentAccount(account)
                 } else {
-                    console.log("No authorized account found")
                 }
             }
         } catch (error) {
@@ -51,7 +49,7 @@ const ConnectButton = () => {
 
     useEffect(() => {
         checkIfWalletIsConnected();
-    },)
+    },[])
 
     const renderContent = () => {
         if (!currentAccount) {
