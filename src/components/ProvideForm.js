@@ -1,37 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Container, Card, Button, Row, Col } from "react-bootstrap";
-import abi from "../utils/RollswapPair.json";
-import {
-  PAIR_CONTRACT,
-  OHM_CONTRACT,
-  TIME_CONTRACT,
-  tokenabi,
-} from "../utils/constants";
 import { ethers } from "ethers";
+import { PAIR_CONTRACT } from "../utils/constants";
 
-const ProvideForm = () => {
+const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
   const [token0, setToken0] = useState(null);
   const [token1, setToken1] = useState(null);
+  const [allowance, setAllowance] = useState(null);
 
   const contractAddress = PAIR_CONTRACT;
-  const contractABI = abi.abi;
-
-  const ohmAddress = OHM_CONTRACT;
-  const timeAddress = TIME_CONTRACT;
-
-  const { ethereum } = window;
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const signer = provider.getSigner();
-  const RollswapPair = new ethers.Contract(
-    contractAddress,
-    contractABI,
-    signer
-  );
-
-  const Ohm = new ethers.Contract(ohmAddress, tokenabi, signer);
-
-  const Time = new ethers.Contract(timeAddress, tokenabi, signer);
-
   const provideLiquidity = async (e) => {
     try {
       e.preventDefault();
@@ -40,41 +17,41 @@ const ProvideForm = () => {
         ethers.utils.parseEther(token0.toString()),
         ethers.utils.parseEther(token1.toString())
       );
-      console.log("Provided!");
+      console.log("Provided Liquidity!");
     } catch (error) {
       console.log(error);
     }
   };
+
+  const maxUint256 = 2 ** 256 - 1;
 
   const approveHandler = async (e) => {
     try {
       e.preventDefault();
-      await Ohm.approve(
-        contractAddress,
-        ethers.utils.parseEther(token0.toString())
-      );
+      await Ohm.approve(contractAddress, maxUint256);
 
-      await Time.approve(
-        contractAddress,
-        ethers.utils.parseEther(token1.toString())
-      );
+      await Time.approve(contractAddress, maxUint256);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const allowanceHandler = async (e) => {
+  const checkAllowance = async () => {
     try {
-      e.preventDefault();
-      const allow = await Ohm.allowance(
-        "0x5d11161774511e1e2F59Bf15e55EDd9DF27898bA",
-        contractAddress
-      );
-      console.log(allow / 10 ** 18);
+      const OhmAllow = await Ohm.allowance(address, contractAddress);
+      const TimeAllow = await Time.allowance(address, contractAddress);
+      if (OhmAllow !== 0 && TimeAllow !== 0) {
+        setAllowance("approved");
+      }
+      console.log(allowance);
     } catch (error) {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    checkAllowance();
+  }, []);
 
   return (
     <Card>
@@ -103,13 +80,16 @@ const ProvideForm = () => {
               </Col>
               <Col xs={4}></Col>
               <Col xs={3}>
-                <Button onClick={approveHandler}>Approve</Button>
+                {() => {
+                  if (!allowance) {
+                    return <Button onClick={approveHandler}>Approve</Button>;
+                  }
+                }}
               </Col>
             </Row>
           </div>
         </Container>
       </Form>
-      <Button onClick={allowanceHandler}>Get Allowance</Button>
     </Card>
   );
 };

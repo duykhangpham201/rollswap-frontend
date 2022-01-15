@@ -35,7 +35,7 @@ function App() {
     if (!currentAccount) {
       return <WaitingScreen />;
     } else if (currentAccount) {
-      return <MainScreen />;
+      return <MainScreen address={currentAccount} />;
     }
   };
   return (
