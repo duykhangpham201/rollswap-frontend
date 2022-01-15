@@ -36,7 +36,14 @@ const MainScreen = ({ address }) => {
 
   const renderContent = () => {
     if (form === "swap") {
-      return <SwapForm />;
+      return (
+        <SwapForm
+          address={address}
+          RollswapPair={RollswapPair}
+          Ohm={Ohm}
+          Time={Time}
+        />
+      );
     } else if (form === "provide") {
       return (
         <ProvideForm

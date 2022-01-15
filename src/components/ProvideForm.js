@@ -9,6 +9,7 @@ const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
   const [allowance, setAllowance] = useState(null);
 
   const contractAddress = PAIR_CONTRACT;
+
   const provideLiquidity = async (e) => {
     try {
       e.preventDefault();
@@ -23,14 +24,20 @@ const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
     }
   };
 
-  const maxUint256 = 2 ** 256 - 1;
+  const maxUint256 = 1000;
 
   const approveHandler = async (e) => {
     try {
       e.preventDefault();
-      await Ohm.approve(contractAddress, maxUint256);
+      await Ohm.approve(
+        contractAddress,
+        ethers.utils.parseEther(maxUint256.toString())
+      );
 
-      await Time.approve(contractAddress, maxUint256);
+      await Time.approve(
+        contractAddress,
+        ethers.utils.parseEther(maxUint256.toString())
+      );
     } catch (error) {
       console.log(error);
     }
@@ -40,10 +47,10 @@ const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
     try {
       const OhmAllow = await Ohm.allowance(address, contractAddress);
       const TimeAllow = await Time.allowance(address, contractAddress);
-      if (OhmAllow !== 0 && TimeAllow !== 0) {
+      if (OhmAllow > 1000 && TimeAllow > 1000) {
         setAllowance("approved");
       }
-      console.log(allowance);
+      console.log(OhmAllow, TimeAllow);
     } catch (error) {
       console.log(error);
     }
@@ -51,7 +58,7 @@ const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
 
   useEffect(() => {
     checkAllowance();
-  }, []);
+  });
 
   return (
     <Card>
@@ -80,11 +87,7 @@ const ProvideForm = ({ address, RollswapPair, Ohm, Time }) => {
               </Col>
               <Col xs={4}></Col>
               <Col xs={3}>
-                {() => {
-                  if (!allowance) {
-                    return <Button onClick={approveHandler}>Approve</Button>;
-                  }
-                }}
+                <Button onClick={approveHandler}>Approve</Button>
               </Col>
             </Row>
           </div>
